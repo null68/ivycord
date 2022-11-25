@@ -1,0 +1,20 @@
+{
+  "name": "ivycord",
+  "version": "1.0.0",
+  "description": "Yet another lavalink client",
+  "main": "src/ivycord.js",
+  "keywords": [
+    "lavalink",
+    "discord",
+    "music",
+    "ivycord",
+    "discordjs",
+    "eris"
+  ],
+  "author": "null.",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.2.0",
+    "ws": "^8.11.0"
+  }
+}
