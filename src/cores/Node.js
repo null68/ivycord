@@ -5,6 +5,7 @@ module.exports = class Node {
   constructor(manager, options) {
     this.manager = manager || null;
     this.config = options.config || {};
+    this.stats = {};
     this.connected = false;
     this.ws = null;
   }
