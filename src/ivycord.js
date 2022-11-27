@@ -1,4 +1,4 @@
-const Manager = require('./cores/Manager');
-const Node = require('./cores/Node');
+const Manager = require('./lib/Manager');
+const Node = require('./lib/Node');
 
 module.exports = { Manager, Node };
