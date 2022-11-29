@@ -47,7 +47,7 @@ module.exports = class Node {
         // TODO
       }
       if (data.op == 'event') {
-        // TODO
+        this.handleEvent(data);
       }
     });
     this.ws.on('close', e => {
@@ -58,6 +58,9 @@ module.exports = class Node {
       this.connected = false;
       this.manager.emit('nodeError', this, e);
     });
+  }
+  handleEvent(data) {
+    
   }
   sendWS(data) {
     if (!data) throw new Error('No data provided!');

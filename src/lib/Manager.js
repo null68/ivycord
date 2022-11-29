@@ -40,7 +40,7 @@ module.exports = class Manager extends EventEmitter {
     }
     return ideal;
   }
-  createPlayer(guildID, channelID) {
+  create(guildID, channelID) {
     let player = this.players.find(p => p.guild === guildID);
     if (player) return player;
     player = new Player(this, this.getIdealNode(), {
@@ -82,5 +82,8 @@ module.exports = class Manager extends EventEmitter {
       sessionId: player.sessionId,
       event: data,
     });
+  }
+  getPlayer(guildID) {
+    return this.players.find(p => p.guild === guildID);
   }
 };

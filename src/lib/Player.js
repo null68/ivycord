@@ -9,7 +9,7 @@ module.exports = class Player {
     this.sessionId = null;
     this.track = null;
     this.paused = false;
-    this.volume = 100;
+    this.volume = 50;
   }
   setData(data) {
     this.voice_channel = data.voice_channel || this.voice_channel;
@@ -59,6 +59,36 @@ module.exports = class Player {
       op: 'pause',
       guildId: this.guild,
       pause,
+    });
+  }
+  destroy() {
+    this.node.sendWS({
+      op: 'destroy',
+      guildId: this.guild,
+    });
+  }
+  stop() {
+    this.node.sendWS({
+      op: 'stop',
+      guildId: this.guild,
+    });
+  }
+  seek(position) {
+    if (typeof position !== 'number')
+      throw new Error('Position must be a number!');
+    this.node.sendWS({
+      op: 'seek',
+      guildId: this.guild,
+      position,
+    });
+  }
+  setVolume(volume) {
+    if (typeof volume !== 'number') throw new Error('Volume must be a number!');
+    this.volume = volume;
+    this.node.sendWS({
+      op: 'volume',
+      guildId: this.guild,
+      volume,
     });
   }
 };
