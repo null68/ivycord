@@ -15,7 +15,7 @@ module.exports = class Manager extends EventEmitter {
       };
     });
     client.on('rawWS', packet => {
-      this.updateVoicePackets(packet);
+      this.#updateVoicePackets(packet);
     });
     this.nodes = [];
     this.players = [];
@@ -51,17 +51,17 @@ module.exports = class Manager extends EventEmitter {
     return player;
   }
 
-  updateVoicePackets(packet) {
+  #updateVoicePackets(packet) {
     switch (packet.t) {
       case 'VOICE_SERVER_UPDATE':
-        this.updateVoiceServerState(packet.d);
+        this.#updateVoiceServerState(packet.d);
         break;
       case 'VOICE_STATE_UPDATE':
-        this.updateVoiceState(packet.d);
+        this.#updateVoiceState(packet.d);
         break;
     }
   }
-  updateVoiceState(data) {
+  #updateVoiceState(data) {
     let player = this.players.find(p => p.guild === data.guild_id);
     if (!player) return;
     if (data.user_id !== this.botID) return;
@@ -71,7 +71,7 @@ module.exports = class Manager extends EventEmitter {
       sessionId: data.session_id,
     });
   }
-  updateVoiceServerState(data) {
+  #updateVoiceServerState(data) {
     let player = this.players.find(p => p.guild === data.guild_id);
     if (!player) return;
     if (!data.endpoint) throw new Error('No endpoint provided!');

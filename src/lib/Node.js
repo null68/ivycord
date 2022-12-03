@@ -47,7 +47,7 @@ module.exports = class Node {
         // TODO
       }
       if (data.op == 'event') {
-        this.handleEvent(data);
+        this.#handleEvent(data);
       }
     });
     this.ws.on('close', e => {
@@ -59,8 +59,23 @@ module.exports = class Node {
       this.manager.emit('nodeError', this, e);
     });
   }
-  handleEvent(data) {
-    
+  #handleEvent(data) {
+    switch (data.type) {
+      case 'TrackStartEvent':
+        this.manager.emit('trackStart', data);
+        break;
+      case 'TrackEndEvent':
+        this.manager.emit('trackEnd', data);
+        break;
+      case 'TrackExceptionEvent':
+        this.manager.emit('trackException', data);
+        break;
+      case 'TrackStuckEvent':
+        this.manager.emit('trackStuck', data);
+        break;
+      default:
+        this.manager.emit('unknownEvent', data);
+    }
   }
   sendWS(data) {
     if (!data) throw new Error('No data provided!');

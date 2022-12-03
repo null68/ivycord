@@ -1,5 +1,6 @@
 const songs = require('./utils/songs');
 const Track = require('./structs/Track');
+const Queue = require('./structs/Queue');
 module.exports = class Player {
   constructor(manager, node, options) {
     this.manager = manager;
@@ -7,9 +8,9 @@ module.exports = class Player {
     this.voice_channel = options.voice_channel || null;
     this.guild = options.guild || null;
     this.sessionId = null;
-    this.track = null;
     this.paused = false;
     this.volume = 50;
+    this.queue = new Queue();
   }
   setData(data) {
     this.voice_channel = data.voice_channel || this.voice_channel;
@@ -33,24 +34,36 @@ module.exports = class Player {
       },
     });
   }
-  play(track) {
-    if (!track) throw new Error('No track provided!');
-    songs
-      .loadTracks(this.node, track)
-      .then(res => {
-        this.track = new Track(res.tracks[0].track, res.tracks[0].info);
-        this.node.sendWS({
-          op: 'play',
-          guildId: this.guild,
-          track: this.track.track,
-          volume: this.volume,
-          noReplace: false,
-          pause: false,
+  search(query) {
+    if (!query) throw new Error('No query provided!');
+    return new Promise((resolve, reject) => {
+      songs
+        .loadTracks(this.node, 'ytsearch: ' + query)
+        .then(res => {
+          let results = res.tracks.map(
+            track => new Track(track.track, track.info)
+          );
+          resolve(results);
+        })
+        .catch(() => {
+          reject(null);
         });
-      })
-      .catch(err => {
-        console.log(err);
-      });
+    });
+  }
+  play() {
+    if (!this.queue.getCurrent) {
+      if (!this.queue.getFirst) return null;
+      this.queue.setCurrent(this.queue.getFirst);
+      this.queue.remove(0);
+    }
+    return this.node.sendWS({
+      op: 'play',
+      guildId: this.guild,
+      track: this.queue.getCurrent.track,
+      volume: this.volume,
+      noReplace: false,
+      pause: false,
+    });
   }
   pause(pause) {
     if (typeof pause !== 'boolean') throw new Error('Pause must be a boolean!');
