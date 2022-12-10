@@ -1,6 +1,6 @@
 {
   "name": "ivycord",
-  "version": "1.0.0",
+  "version": "0.0.5",
   "description": "Yet another lavalink client",
   "main": "src/ivycord.js",
   "keywords": [
@@ -16,5 +16,20 @@
   "dependencies": {
     "axios": "^1.2.0",
     "ws": "^8.11.0"
-  }
+  },
+  "directories": {
+    "example": "examples"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/null68/ivycord.git"
+  },
+  "bugs": {
+    "url": "https://github.com/null68/ivycord/issues"
+  },
+  "homepage": "https://github.com/null68/ivycord#readme"
 }
