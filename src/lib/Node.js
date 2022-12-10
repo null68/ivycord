@@ -60,18 +60,44 @@ module.exports = class Node {
     });
   }
   #handleEvent(data) {
+    let player = this.manager.getPlayer(data.guildId);
     switch (data.type) {
       case 'TrackStartEvent':
         this.manager.emit('trackStart', data);
         break;
       case 'TrackEndEvent':
+        if (data.reason === 'REPLACED' || data.reason === 'STOPPED') return;
+        player.playing = false;
+        if (player.queue.length > 0) {
+          player.previous = player.current;
+          player.current = null;
+          player.play();
+        } else {
+          player.current = null;
+          player.previous = null;
+          this.manager.emit('queueEnd', data);
+        }
         this.manager.emit('trackEnd', data);
         break;
       case 'TrackExceptionEvent':
+        player.stop();
         this.manager.emit('trackException', data);
         break;
       case 'TrackStuckEvent':
+        player.stop();
         this.manager.emit('trackStuck', data);
+        break;
+      case 'WebSocketClosedEvent':
+        this.manager.sendData({
+          op: 4,
+          d: {
+            self_deaf: false,
+            guild_id: player.guild,
+            channel_id: null,
+            self_mute: false,
+          },
+        });
+        this.manager.emit('webSocketClosed', data);
         break;
       default:
         this.manager.emit('unknownEvent', data);

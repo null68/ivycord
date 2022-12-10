@@ -9,6 +9,9 @@ module.exports = class Player {
     this.guild = options.guild || null;
     this.sessionId = null;
     this.paused = false;
+    this.playing = false;
+    this.current = null;
+    this.previous = null;
     this.volume = 50;
     this.queue = new Queue();
   }
@@ -21,16 +24,14 @@ module.exports = class Player {
     if (!track) throw new Error('No track provided!');
     this.track = track;
   }
-  connect(channel) {
-    if (!channel) throw new Error('No channel provided!');
-    this.channel = channel;
+  connect(options = {}) {
     this.manager.sendData({
       op: 4,
       d: {
         guild_id: this.guild,
-        channel_id: this.channel,
-        self_mute: false,
-        self_deaf: false,
+        channel_id: this.voice_channel,
+        self_mute: options.self_mute || false,
+        self_deaf: options.self_deaf || false,
       },
     });
   }
@@ -38,8 +39,15 @@ module.exports = class Player {
     if (!query) throw new Error('No query provided!');
     return new Promise((resolve, reject) => {
       songs
-        .loadTracks(this.node, 'ytsearch: ' + query)
+        .loadTracks(
+          this.node,
+          /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/gi.test(query)
+            ? `${query}`
+            : `ytsearch:${query}`
+        )
         .then(res => {
+          if (res.loadType === 'NO_MATCHES') return reject('No results found!');
+          if (res.loadType === 'LOAD_FAILED') return reject('Load failed!');
           let results = res.tracks.map(
             track => new Track(track.track, track.info)
           );
@@ -51,15 +59,16 @@ module.exports = class Player {
     });
   }
   play() {
-    if (!this.queue.getCurrent) {
-      if (!this.queue.getFirst) return null;
-      this.queue.setCurrent(this.queue.getFirst);
+    if (this.playing) return;
+    this.playing = true;
+    if (!this.current) {
+      this.current = this.queue.first();
       this.queue.remove(0);
     }
     return this.node.sendWS({
       op: 'play',
       guildId: this.guild,
-      track: this.queue.getCurrent.track,
+      track: this.current.track,
       volume: this.volume,
       noReplace: false,
       pause: false,

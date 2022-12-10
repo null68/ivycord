@@ -30,7 +30,6 @@ module.exports = class Manager extends EventEmitter {
     node.close();
     this.nodes = this.nodes.filter(n => n !== node);
   }
-  // TODO: Add better way to get ideal node
   getIdealNode() {
     let ideal = this.nodes[0];
     for (let node of this.nodes) {
@@ -41,6 +40,8 @@ module.exports = class Manager extends EventEmitter {
     return ideal;
   }
   create(guildID, channelID) {
+    if (!guildID) throw new Error('No guild ID provided!');
+    if (!channelID) throw new Error('No channel ID provided!');
     let player = this.players.find(p => p.guild === guildID);
     if (player) return player;
     player = new Player(this, this.getIdealNode(), {
