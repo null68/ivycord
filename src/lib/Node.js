@@ -29,7 +29,7 @@ module.exports = class Node {
       Authorization: this.config.password,
       'User-id': this.manager.botID,
       'Num-Shards': this.manager.shards,
-      'Client-Name': 'Ivycord/0.0.1',
+      'Client-Name': 'Ivycord/0.0.5',
     };
 
     this.ws = new ws('ws://' + this.config.url, { headers });
@@ -66,7 +66,6 @@ module.exports = class Node {
         this.manager.emit('trackStart', data);
         break;
       case 'TrackEndEvent':
-        if (data.reason === 'REPLACED' || data.reason === 'STOPPED') return;
         player.playing = false;
         if (player.queue.length > 0) {
           player.previous = player.current;

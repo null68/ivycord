@@ -84,10 +84,17 @@ module.exports = class Player {
     });
   }
   destroy() {
+    this.queue.clear();
+    this.current = null;
+    this.previous = null;
+    this.playing = false;
+    this.paused = false;
+    this.volume = 50;
     this.node.sendWS({
       op: 'destroy',
       guildId: this.guild,
     });
+    this.manager.emit('playerDestroy', this);
   }
   stop() {
     this.node.sendWS({
