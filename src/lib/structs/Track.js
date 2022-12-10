@@ -10,8 +10,11 @@ module.exports = class Track {
     this.sourceName = info.sourceName;
     this.title = info.title;
     this.uri = info.uri;
+    this.requester = null; // Set by the player
   }
-  get getThumbnail() {
-    return `https://img.youtube.com/vi/${this.identifier}/maxresdefault.jpg`;
+  // Resolution list for thumbnails (0, 1, 2, 3, default, hqdefault, mqdefault, sddefault, maxresdefault)
+  displayThumbnailURL(resolution = 'default') {
+    return `https://img.youtube.com/vi/${this.identifier}/${resolution}.jpg`;
   }
+  
 };
