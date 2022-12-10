@@ -20,8 +20,8 @@ module.exports = class Manager extends EventEmitter {
     this.nodes = [];
     this.players = [];
   }
-  addNode(manager, nodeOptions) {
-    let node = new Node(manager, nodeOptions);
+  addNode(nodeOptions) {
+    let node = new Node(this, nodeOptions);
     node.open();
     this.nodes.push(node);
   }
