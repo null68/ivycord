@@ -35,7 +35,7 @@ Once you have created an instance of the Ivycord class and connected to your Lav
 let player = ivycord.create("guildID", "channelID");
 
 // Add a track to the queue
-player.queue.add(`track: Track`);
+player.queue.add(track: Track);
 
 // Start playback
 player.play();
